@@ -6,7 +6,7 @@ import org.junit.jupiter.api.*;
 import java.io.IOException;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class ValidarAlteracao {
+public class ValidarApagar {
 
     com.usuarios.classUsuarios usuarios = new com.usuarios.classUsuarios();
 
@@ -17,8 +17,8 @@ public class ValidarAlteracao {
 
     @Test
     @Order(1)
-    public void alterando_usuario() throws IOException {
-        usuarios.alterando_usuario("2","morpheus","Pets");
+    public void apagando_usuario() throws IOException {
+        usuarios.apagando_usuario("2");
     }
 
 

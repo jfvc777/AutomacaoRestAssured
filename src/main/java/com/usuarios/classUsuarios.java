@@ -30,6 +30,144 @@ public class classUsuarios {
         consulta_usuario_resource(user);
     }
 
+    public void cadastrando_usuario(String name, String job) throws IOException {
+        registrar_usuario(name, job);
+    }
+
+    public void cadastrando_acesso(String email, String pass) throws IOException {
+        registrar_acesso(email, pass);
+    }
+
+    public void delay_usuario(String time) throws IOException {
+        time_usuario(time);
+    }
+
+    public void confirmando_usuario(String email, String pass) throws IOException {
+        confirm_usuario(email, pass);
+    }
+
+    public void alterando_usuario(String id, String user, String job) throws IOException {
+        altera_usuario(id, user, job);
+    }
+
+    public void apagando_usuario(String id) throws IOException {
+        apaga_usuario(id);
+    }
+
+    private void apaga_usuario(String id) throws IOException {
+        Response response = given()
+                .header("Content-type", "application/json")
+                .when()
+                .delete("/" + id)
+                .then()
+                .statusCode(204)
+                .extract().response();
+        System.out.println("Foi apagado com sucesso");
+
+    }
+
+    private void altera_usuario(String id, String user, String job) throws IOException {
+        String[] listaParametros = {user, job};
+        String body = bodyParseUser(listaParametros);
+
+        Response response = given()
+                .header("Content-type", "application/json")
+                .and()
+                .body(body)
+                .when()
+                .put("/users/" + id)
+                .then()
+                .statusCode(200)
+                .extract().response();
+        String constante = response.getBody().asString();
+        System.out.println("------------------------------------------------");
+        System.out.println("Name : " + parsearJsonGeral(constante, "name").replace("\"", ""));
+        System.out.println("Job : " + parsearJsonGeral(constante, "job").replace("\"", ""));
+        System.out.println("updateAt : " + parsearJsonGeral(constante, "updatedAt").replace("\"", ""));
+    }
+
+    private void confirm_usuario(String email, String pass) throws IOException {
+        String[] listaParametros = {email, pass};
+        String body = bodyParseAcesso(listaParametros);
+
+        Response response = given()
+                .header("Content-type", "application/json")
+                .and()
+                .body(body)
+                .when()
+                .post("/login")
+                .then()
+                .statusCode(200)
+                .extract().response();
+        String constante = response.getBody().asString();
+        System.out.println("------------------------------------------------");
+        System.out.println("Token : " + parsearJsonGeral(constante, "token").replace("\"", ""));
+    }
+
+    private void time_usuario(String time) throws IOException {
+        Response response = given()
+                .contentType(ContentType.JSON)
+                .param("delay", time)
+                .when()
+                .get("/users")
+                .then()
+                .statusCode(200)
+                .extract().response();
+
+        String constante = response.getBody().asString();
+        List<JsonNode> stringConstante = parsearJsonData1(constante);
+        int pagesize = Integer.parseInt(parsearJsonGeral(constante, "per_page"));
+
+        for (int i = 0; i < pagesize; i++) {
+            System.out.println("ID : " + String.valueOf(stringConstante.get(0).get(i).get("id")));
+            System.out.println("Email : " + String.valueOf(stringConstante.get(0).get(i).get("email")));
+            System.out.println("First Name : " + String.valueOf(stringConstante.get(0).get(i).get("first_name")));
+            System.out.println("Last Name : " + String.valueOf(stringConstante.get(0).get(i).get("last_name")));
+            System.out.println("Avatar : " + String.valueOf(stringConstante.get(0).get(i).get("avatar")));
+            System.out.println("---------------------------------------------");
+        }
+    }
+
+    private void registrar_acesso(String email, String pass) throws IOException {
+        String[] listaParametros = {email, pass};
+        String body = bodyParseAcesso(listaParametros);
+
+        Response response = given()
+                .header("Content-type", "application/json")
+                .and()
+                .body(body)
+                .when()
+                .post("/register")
+                .then()
+                .statusCode(200)
+                .extract().response();
+        String constante = response.getBody().asString();
+        System.out.println("------------------------------------------------");
+        System.out.println("ID : " + parsearJsonGeral(constante, "id").replace("\"", ""));
+        System.out.println("Token : " + parsearJsonGeral(constante, "token").replace("\"", ""));
+    }
+
+    private void registrar_usuario(String name, String job) throws IOException {
+        String[] listaParametros = {name, job};
+        String body = bodyParseUser(listaParametros);
+
+        Response response = given()
+                .header("Content-type", "application/json")
+                .and()
+                .body(body)
+                .when()
+                .post("/users")
+                .then()
+                .statusCode(201)
+                .extract().response();
+
+        String constante = response.getBody().asString();
+        System.out.println("Name : " + parsearJsonGeral(constante, "name").replace("\"", ""));
+        System.out.println("Job : " + parsearJsonGeral(constante, "job").replace("\"", ""));
+        System.out.println("ID : " + parsearJsonGeral(constante, "id").replace("\"", ""));
+        System.out.println("Created At : " + parsearJsonGeral(constante, "createdAt").replace("\"", ""));
+    }
+
     private void consulta_resource_geral() throws IOException {
 
         Response response = given()
@@ -133,6 +271,24 @@ public class classUsuarios {
         JsonParser jsonParser = factory.createParser(parametro);
         JsonNode node = mapper.readTree(jsonParser);
         return node;
+    }
+
+    private String bodyParseUser(String[] paramentros) {
+        String body = "{\n"
+                + "\"name\":" + "\"" + paramentros[0].toString() + "\"" + ","
+                + "\"job\":" + "\"" + paramentros[1].toString() + "\""
+                + "\n}";
+
+        return body;
+    }
+
+    private String bodyParseAcesso(String[] paramentros) {
+        String body = "{\n"
+                + "\"email\":" + "\"" + paramentros[0].toString() + "\"" + ","
+                + "\"password\":" + "\"" + paramentros[1].toString() + "\""
+                + "\n}";
+
+        return body;
     }
 
 

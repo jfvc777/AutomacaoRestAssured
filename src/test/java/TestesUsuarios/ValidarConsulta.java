@@ -2,6 +2,7 @@ package TestesUsuarios;
 
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.*;
+
 import java.io.IOException;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -17,7 +18,7 @@ public class ValidarConsulta {
     @Test
     @Order(1)
     public void consultando_listado_geral_usuarios() throws IOException {
-            usuarios.consulta_usuario_global("1");
+        usuarios.consulta_usuario_global("2");
     }
 
     @Test
@@ -41,7 +42,7 @@ public class ValidarConsulta {
     @Test
     @Order(5)
     public void consultando_resource_por_usuario() throws IOException {
-       usuarios.consulta_resource_usuario("1");
+        usuarios.consulta_resource_usuario("1");
     }
 
     @Test
@@ -49,6 +50,13 @@ public class ValidarConsulta {
     public void consultando_resource_por_usuario_inexistente() throws IOException {
         usuarios.consulta_resource_usuario("20");
     }
+
+    @Test
+    @Order(7)
+    public void parametro_delay_usuario() throws IOException {
+        usuarios.delay_usuario("6");
+    }
+
 
 
 }
